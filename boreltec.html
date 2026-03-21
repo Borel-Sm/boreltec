@@ -2,332 +2,97 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Ponto Digital</title>
     <style>
-        /* ================= CSS ================= */
-        :root {
-            --bg-color: #f4f7f6;
-            --nav-bg: #1e293b;
-            --text-light: #f8fafc;
-            --text-dark: #334155;
-            --primary: #3b82f6;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #10b981;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-        }
-
+        :root { --bg: #f0f2f5; --dark: #1e293b; --blue: #3b82f6; --red: #ef4444; --orange: #f59e0b; }
+        body { font-family: sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
+        
         /* Menu Sticky */
-        .sticky-nav {
-            position: sticky;
-            top: 0;
-            background-color: var(--nav-bg);
-            color: var(--text-light);
-            padding: 1rem 2rem;
-            z-index: 1000;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .sticky-nav h2 {
-            margin: 0 0 1rem 0;
-            font-size: 1.2rem;
-        }
-
-        .cards-container {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 200px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .card h3 { margin: 0; font-size: 1rem; text-transform: uppercase;}
-        .card .valor { font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0; }
-        .status { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;}
-        .status.ativo { background-color: rgba(52, 211, 153, 0.2); color: #34d399; font-weight: bold; }
-        .status.inativo { background-color: rgba(248, 113, 113, 0.2); color: #f87171; font-weight: bold; }
-
-        /* Container Principal */
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .relogio-section {
-            text-align: center;
-            margin-bottom: 2rem;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        #relogio {
-            font-size: 4.5rem;
-            margin: 0;
-            color: var(--nav-bg);
-            font-variant-numeric: tabular-nums; /* Mantém os números alinhados */
-        }
+        .nav { position: sticky; top: 0; background: var(--dark); color: white; padding: 15px; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .cards { display: flex; gap: 10px; margin-top: 10px; }
+        .card { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; flex: 1; border: 1px solid rgba(255,255,255,0.2); }
         
-        #data-atual {
-            font-size: 1.2rem;
-            color: #64748b;
-            margin-top: 0.5rem;
-        }
-
-        /* Botões */
-        .acoes {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            transition: transform 0.2s, filter 0.2s;
-        }
-
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn.primary { background-color: var(--primary); }
-        .btn.danger { background-color: var(--danger); }
-        .btn.warning { background-color: var(--warning); color: #fff; }
-        .btn.danger-outline { 
-            background: transparent; 
-            border: 2px solid var(--danger); 
-            color: var(--danger); 
-            display: block;
-            margin: 3rem auto;
-            width: 100%;
-            max-width: 300px;
-        }
-        .btn.danger-outline:hover {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        /* Resumo e Histórico */
-        .resumo {
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .resumo-item {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        .resumo-item span {
-            color: var(--primary);
-        }
-
-        .historico-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        #lista-historico {
-            list-style: none;
-            padding: 0;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        #lista-historico li {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            transition: background-color 0.2s;
-        }
-        #lista-historico li:hover { background-color: #f8fafc; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; margin-bottom: 20px; }
         
-        .historico-tipo { font-weight: bold; }
-        .historico-data { color: #64748b; }
+        #relogio { font-size: 3.5rem; font-weight: bold; margin: 10px 0; color: var(--dark); }
+        
+        .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        button { padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-iniciar { background: var(--blue); grid-column: span 2; }
+        .btn-parar { background: var(--red); }
+        .btn-saida { background: var(--orange); }
+        .btn-limpar { background: none; color: var(--red); border: 1px solid var(--red); width: 100%; margin-top: 20px; }
+
+        .historico { background: white; padding: 15px; border-radius: 8px; text-align: left; }
+        ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
+        li { padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <nav class="sticky-nav">
-        <h2>Meus Benefícios (Ciclo atual)</h2>
-        <div class="cards-container">
-            <div class="card" id="card-alimentacao">
-                <h3>Cartão de Alimentação</h3>
-                <p class="valor">R$ 270,00</p>
-                <span class="status ativo" id="status-alimentacao">Ativo</span>
-            </div>
-            <div class="card" id="card-produtividade">
-                <h3>Cartão de Produtividade</h3>
-                <p class="valor">R$ 150,00</p>
-                <span class="status ativo" id="status-produtividade">100% Ativo</span>
-            </div>
+    <nav class="nav">
+        <strong>Benefícios (Ciclo 22 a 21)</strong>
+        <div class="cards">
+            <div class="card">Alimentação: <strong>R$ 270</strong></div>
+            <div class="card">Produtividade: <strong>R$ 150</strong></div>
         </div>
     </nav>
 
-    <main class="container">
-        <section class="relogio-section">
-            <h1 id="relogio">00:00:00</h1>
-            <p id="data-atual">Carregando data...</p>
-        </section>
+    <div class="container">
+        <div class="box">
+            <div id="relogio">00:00:00</div>
+            <div id="data">Carregando...</div>
+        </div>
 
-        <section class="acoes">
-            <button id="btn-iniciar" class="btn primary">INICIAR TRABALHO</button>
-            <button id="btn-saida" class="btn warning">SAÍDA / RETORNO</button>
-            <button id="btn-parar" class="btn danger">PARAR TRABALHO</button>
-        </section>
+        <div class="btns">
+            <button class="btn-iniciar" onclick="baterPonto('INICIAR JORNADA')">INICIAR TRABALHO</button>
+            <button class="btn-saida" onclick="baterPonto('SAÍDA/RETORNO')">SAÍDA (PAUSA)</button>
+            <button class="btn-parar" onclick="baterPonto('PARAR JORNADA')">PARAR TRABALHO</button>
+        </div>
 
-        <section class="resumo">
-            <div class="resumo-item">Trabalhadas: <span id="horas-trabalhadas">00:00:00</span></div>
-            <div class="resumo-item">Faltosas: <span id="horas-faltosas">00:00:00</span></div>
-            <div class="resumo-item">Extras: <span id="horas-extras">00:00:00</span></div>
-        </section>
+        <div class="historico">
+            <strong>Histórico Recente:</strong>
+            <ul id="lista"></ul>
+        </div>
 
-        <section class="historico-section">
-            <h2>Histórico do Ciclo (Dia 22 ao dia 21)</h2>
-            <ul id="lista-historico">
-                </ul>
-        </section>
-
-        <button id="btn-excluir" class="btn danger-outline">EXCLUIR HISTÓRICO</button>
-    </main>
+        <button class="btn-limpar" onclick="limparTudo()">EXCLUIR HISTÓRICO</button>
+    </div>
 
     <script>
-        // 1. Relógio em Tempo Real
-        function atualizarRelogio() {
+        // Relógio
+        setInterval(() => {
             const agora = new Date();
-            
-            // Formata a hora: HH:MM:SS
-            const horas = String(agora.getHours()).padStart(2, '0');
-            const minutos = String(agora.getMinutes()).padStart(2, '0');
-            const segundos = String(agora.getSeconds()).padStart(2, '0');
-            document.getElementById('relogio').textContent = `${horas}:${minutos}:${segundos}`;
+            document.getElementById('relogio').innerText = agora.toLocaleTimeString('pt-BR');
+            document.getElementById('data').innerText = agora.toLocaleDateString('pt-BR', {dateStyle: 'full'});
+        }, 1000);
 
-            // Formata a data
-            const opcoesData = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            // Deixa a primeira letra maiúscula
-            let dataString = agora.toLocaleDateString('pt-BR', opcoesData);
-            dataString = dataString.charAt(0).toUpperCase() + dataString.slice(1);
-            document.getElementById('data-atual').textContent = dataString;
-        }
-        
-        setInterval(atualizarRelogio, 1000);
-        atualizarRelogio(); // Chama imediatamente para não esperar 1s na tela em branco
+        // Lógica de Dados
+        let registros = JSON.parse(localStorage.getItem('meuponto_v1')) || [];
 
-        // 2. Manipulação de Dados no LocalStorage
-        let registros = JSON.parse(localStorage.getItem('pontos')) || [];
-
-        function salvarRegistro(tipo) {
-            const agora = new Date();
-            const registro = {
-                id: Date.now(),
-                tipo: tipo,
-                dataHora: agora.toISOString(), // Salva em formato universal para facilitar cálculos depois
-            };
-            registros.push(registro);
-            localStorage.setItem('pontos', JSON.stringify(registros));
-            atualizarHistorico();
+        function baterPonto(tipo) {
+            if (confirm(`Deseja confirmar: ${tipo}?`)) {
+                const agora = new Date();
+                registros.push({ tipo, hora: agora.toLocaleString('pt-BR') });
+                localStorage.setItem('meuponto_v1', JSON.stringify(registros));
+                renderizar();
+            }
         }
 
-        // 3. Eventos dos Botões com Confirmação
-        document.getElementById('btn-iniciar').addEventListener('click', () => {
-            if (confirm('Deseja CONCLUIR/INICIAR sua jornada de trabalho? \n\nClique em OK para confirmar sua ENTRADA.')) {
-                salvarRegistro('Entrada');
-                alert('Jornada iniciada com sucesso!');
-            }
-        });
-
-        document.getElementById('btn-parar').addEventListener('click', () => {
-            if (confirm('Deseja PARAR com sua jornada de trabalho? \n\nClique em OK para confirmar sua SAÍDA FINAL do dia.')) {
-                salvarRegistro('Saída Final');
-                alert('Jornada finalizada com sucesso!');
-            }
-        });
-
-        document.getElementById('btn-saida').addEventListener('click', () => {
-            if (confirm('Deseja registrar uma SAÍDA/RETORNO (pausa)? \n\nIsso marcará o horário exato em que você saiu ou voltou para a empresa.')) {
-                salvarRegistro('Pausa/Retorno');
-                alert('Pausa/Retorno registrado!');
-            }
-        });
-
-        document.getElementById('btn-excluir').addEventListener('click', () => {
-            if (confirm('ATENÇÃO: Deseja EXCLUIR TOTALMENTE o histórico dos pontos registrados até o momento? \n\nIsso não poderá ser desfeito!')) {
-                localStorage.removeItem('pontos');
+        function limparTudo() {
+            if (confirm("Apagar todo o histórico permanentemente?")) {
+                localStorage.removeItem('meuponto_v1');
                 registros = [];
-                atualizarHistorico();
-                alert('Histórico excluído com sucesso.');
+                renderizar();
             }
-        });
-
-        // 4. Renderizar Histórico na Tela
-        function atualizarHistorico() {
-            const lista = document.getElementById('lista-historico');
-            lista.innerHTML = ''; // Limpa a lista na tela
-
-            if(registros.length === 0) {
-                lista.innerHTML = '<li>Nenhum ponto registrado neste ciclo ainda.</li>';
-                return;
-            }
-
-            // Pega os registros do mais recente para o mais antigo para visualização
-            const registrosReversos = [...registros].reverse();
-
-            registrosReversos.forEach(reg => {
-                const dataObjeto = new Date(reg.dataHora);
-                
-                // Formatação bonita para o histórico
-                const dataFormatada = dataObjeto.toLocaleDateString('pt-BR');
-                const horaFormatada = dataObjeto.toLocaleTimeString('pt-BR');
-
-                const li = document.createElement('li');
-                
-                li.innerHTML = `
-                    <span class="historico-tipo">${reg.tipo}</span>
-                    <span class="historico-data">${dataFormatada} às ${horaFormatada}</span>
-                `;
-                
-                // Interação ao clicar no item do histórico
-                li.addEventListener('click', () => {
-                    alert(`Detalhes:\nBatida: ${reg.tipo}\nData: ${dataFormatada}\nHora Exata: ${horaFormatada}`);
-                });
-
-                lista.appendChild(li);
-            });
         }
 
-        // Inicia a renderização do histórico ao carregar a página
-        atualizarHistorico();
+        function renderizar() {
+            const lista = document.getElementById('lista');
+            lista.innerHTML = registros.map(r => `<li><span>${r.tipo}</span> <b>${r.hora}</b></li>`).reverse().join('');
+        }
+
+        renderizar();
     </script>
 </body>
 </html>
