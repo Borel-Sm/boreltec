@@ -2,189 +2,276 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>BOREL TEC - Gestão & Ponto</title>
+    <title>BOREL TEC - Fullstack Point</title>
     <style>
         :root { 
-            --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; 
+            --bg: #0f172a; --card: #1e293b; --text: #f8fafc; 
             --blue: #3b82f6; --red: #ef4444; --orange: #f59e0b; --green: #10b981; 
         }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
         
-        /* Nav Sticky */
-        .nav { position: sticky; top: 0; background: var(--card-bg); padding: 15px; z-index: 100; border-bottom: 2px solid var(--blue); }
-        .cards { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; }
-        .card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; min-width: 150px; border: 1px solid rgba(255,255,255,0.1); }
-        .card h4 { margin: 0; font-size: 0.7rem; color: #94a3b8; }
-        .valor-beneficio { font-size: 1.1rem; font-weight: bold; display: block; }
-
-        .container { max-width: 900px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
-
-        /* Calendário Customizado */
-        .calendario-container { background: var(--card-bg); padding: 20px; border-radius: 12px; }
-        .calendario-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .grid-calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .dia-semana { font-size: 0.7rem; color: var(--blue); font-weight: bold; padding-bottom: 10px; }
-        .dia { 
-            padding: 10px 5px; border-radius: 6px; background: rgba(255,255,255,0.03); 
-            cursor: pointer; font-size: 0.9rem; transition: 0.2s; border: 1px solid transparent;
+        /* Sticky Nav */
+        .nav-beneficios { 
+            position: sticky; top: 0; background: var(--card); 
+            padding: 15px; z-index: 100; border-bottom: 2px solid var(--blue);
+            display: flex; gap: 15px; overflow-x: auto;
         }
-        .dia:hover { background: var(--blue); }
-        .dia.com-ponto { border-color: var(--green); color: var(--green); font-weight: bold; }
-        .dia.hoje { background: var(--blue); color: white; }
-        .dia.outro-mes { opacity: 0.3; }
+        .b-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; min-width: 140px; border: 1px solid rgba(255,255,255,0.1); }
+        .b-card small { font-size: 0.7rem; color: #94a3b8; display: block; }
+        .b-card strong { font-size: 1.1rem; color: var(--blue); }
 
-        /* Lateral Direita */
-        .painel-controle { display: flex; flex-direction: column; gap: 20px; }
-        .box { background: var(--card-bg); padding: 20px; border-radius: 12px; }
-        #relogio { font-size: 2.5rem; font-weight: 800; color: var(--blue); text-align: center; }
+        .main-grid { max-width: 1100px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+
+        /* Calendário Real */
+        .cal-box { background: var(--card); padding: 20px; border-radius: 12px; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .cal-btn { background: #334155; border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer; }
+        .grid-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
+        .dia-nome { font-size: 0.75rem; color: var(--blue); font-weight: bold; margin-bottom: 10px; }
+        .dia-num { 
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.03); border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+            border: 1px solid transparent; transition: 0.2s;
+        }
+        .dia-num:hover { background: var(--blue); }
+        .dia-num.hoje { background: var(--blue); font-weight: bold; }
+        .dia-num.tem-ponto { border-color: var(--green); color: var(--green); box-shadow: inset 0 0 5px rgba(16, 185, 129, 0.2); }
+        .dia-num.vazio { opacity: 0; cursor: default; }
+
+        /* Controles */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .widget { background: var(--card); padding: 20px; border-radius: 12px; }
+        #relogio { font-size: 3rem; font-weight: 800; color: var(--blue); text-align: center; font-variant-numeric: tabular-nums; }
         
-        .btns { display: grid; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-group { display: grid; gap: 10px; margin: 20px 0; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
         .btn-iniciar { background: var(--blue); }
+        .btn-pausa { background: var(--orange); }
         .btn-parar { background: var(--red); }
-        .btn-saida { background: var(--orange); }
+        .btn-calc { background: var(--green); width: 100%; margin-top: 10px; }
+        .btn-del-dia { background: none; border: 1px solid var(--red); color: var(--red); width: 100%; margin-top: 15px; font-size: 0.8rem; }
+        
+        .historico-detalhe { border-top: 1px solid #334155; margin-top: 15px; padding-top: 15px; min-height: 100px; }
+        .ponto-item { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px; }
 
-        .historico-dia { margin-top: 15px; font-size: 0.85rem; border-top: 1px solid #334155; padding-top: 10px; }
+        .footer-actions { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+        .btn-danger-light { background: none; border: 1px solid #334155; color: #64748b; cursor: pointer; padding: 10px; border-radius: 8px; }
 
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <nav class="nav">
-        <strong>BOREL TEC - Visão de Benefícios</strong>
-        <div class="cards">
-            <div class="card"><h4>Alimentação</h4><span id="val-alim" class="valor-beneficio">R$ 270,00</span></div>
-            <div class="card"><h4>Produtividade</h4><span id="val-prod" class="valor-beneficio">R$ 150,00</span></div>
-            <div class="card"><h4>Horas Faltosas</h4><span id="val-faltas" class="valor-beneficio">0h 0m</span></div>
-        </div>
+    <nav class="nav-beneficios">
+        <div class="b-card"><small>Alimentação</small><strong id="res-alim">R$ 270,00</strong></div>
+        <div class="b-card"><small>Produtividade</small><strong id="res-prod">R$ 150,00</strong></div>
+        <div class="b-card"><small>Saldo Horas</small><strong id="res-saldo">0h 00m</strong></div>
+        <div class="b-card"><small>Faltosas</small><strong id="res-faltas" style="color:var(--red)">0h 00m</strong></div>
     </nav>
 
-    <div class="container">
-        <div class="calendario-container">
-            <div class="calendario-header">
-                <h3 id="mes-ciclo">Ciclo Atual</h3>
-                <small>22 ao 21</small>
+    <div class="main-grid">
+        <div class="cal-box">
+            <div class="cal-header">
+                <button class="cal-btn" onclick="mudarMes(-1)">◀</button>
+                <h2 id="cal-mes-ano">Janeiro 2026</h2>
+                <button class="cal-btn" onclick="mudarMes(1)">▶</button>
             </div>
-            <div class="grid-calendario" id="grid-dias">
-                </div>
+            <div class="grid-dias" id="calendar-grid"></div>
         </div>
 
-        <div class="painel-controle">
-            <div class="box">
+        <div class="sidebar">
+            <div class="widget">
                 <div id="relogio">00:00:00</div>
-                <div id="data" style="text-align: center; font-size: 0.8rem; color: #94a3b8;"></div>
-                <hr style="border: 0; border-top: 1px solid #334155; margin: 15px 0;">
-                <div class="btns">
-                    <button class="btn-iniciar" onclick="baterPonto('INICIAR')">INICIAR TRABALHO</button>
-                    <button class="btn-saida" onclick="baterPonto('SAÍDA/RETORNO')">SAÍDA / RETORNO</button>
-                    <button class="btn-parar" onclick="baterPonto('PARAR')">PARAR TRABALHO</button>
+                <div class="btn-group">
+                    <button class="btn btn-iniciar" onclick="baterPonto('INICIAR')">INICIAR TRABALHO</button>
+                    <button class="btn btn-pausa" onclick="baterPonto('SAÍDA/RETORNO')">SAÍDA / RETORNO</button>
+                    <button class="btn btn-parar" onclick="baterPonto('PARAR')">PARAR TRABALHO</button>
                 </div>
+                <button class="btn btn-calc" onclick="calcularTudo()">CALCULAR SALDO TOTAL</button>
             </div>
 
-            <div class="box">
-                <strong>Detalhes do Dia: <span id="dia-selecionado">Hoje</span></strong>
-                <div id="detalhes-lista" class="historico-dia">
-                    Clique em um dia no calendário para ver os registros.
+            <div class="widget">
+                <strong>Detalhes: <span id="view-data">Selecione um dia</span></strong>
+                <div id="lista-pontos-dia" class="historico-detalhe">
+                    Nenhum dia selecionado.
                 </div>
+                <button id="btn-excluir-dia" class="btn btn-del-dia" style="display:none;" onclick="excluirDiaSelecionado()">EXCLUIR HISTÓRICO DO DIA</button>
             </div>
         </div>
     </div>
 
-    <script>
-        let registros = JSON.parse(localStorage.getItem('borel_v3')) || [];
+    <div class="footer-actions">
+        <button class="btn-danger-light" onclick="limparTudo()">Limpar Todo o Banco de Dados</button>
+    </div>
 
-        // Relógio
+    <script>
+        // Configurações
+        const JORNADA_MINUTOS = 543; // 9h 03min
+        let dataAtualCal = new Date();
+        let diaSelecionadoStr = "";
+        let registros = JSON.parse(localStorage.getItem('borel_final_v1')) || [];
+
+        // Relógio com segundos
         setInterval(() => {
-            const agora = new Date();
-            document.getElementById('relogio').innerText = agora.toLocaleTimeString('pt-BR');
-            document.getElementById('data').innerText = agora.toLocaleDateString('pt-BR', {dateStyle: 'full'});
+            document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR');
         }, 1000);
 
-        // Gerar Calendário do Ciclo (22 ao 21)
-        function gerarCalendario() {
-            const grid = document.getElementById('grid-dias');
+        // --- LÓGICA DO CALENDÁRIO ---
+        function renderizarCalendario() {
+            const grid = document.getElementById('calendar-grid');
+            const titulo = document.getElementById('cal-mes-ano');
             grid.innerHTML = '';
+
+            const nomesDias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+            nomesDias.forEach(d => grid.innerHTML += `<div class="dia-nome">${d}</div>`);
+
+            const ano = dataAtualCal.getFullYear();
+            const mes = dataAtualCal.getMonth();
+            titulo.innerText = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(dataAtualCal);
+
+            const primeiroDiaMes = new Date(ano, mes, 1).getDay();
+            const ultimoDiaMes = new Date(ano, mes + 1, 0).getDate();
+
+            // Espaços vazios
+            for (let i = 0; i < primeiroDiaMes; i++) grid.innerHTML += `<div class="dia-num vazio"></div>`;
+
+            // Dias do mês
+            for (let i = 1; i <= ultimoDiaMes; i++) {
+                const dataId = `${String(i).padStart(2, '0')}/${String(mes + 1).padStart(2, '0')}/${ano}`;
+                const temPonto = registros.some(r => r.data === dataId);
+                const isHoje = new Date().toLocaleDateString('pt-BR') === dataId;
+
+                const div = document.createElement('div');
+                div.className = `dia-num ${temPonto ? 'tem-ponto' : ''} ${isHoje ? 'hoje' : ''}`;
+                div.innerText = i;
+                div.onclick = () => selecionarDia(dataId);
+                grid.appendChild(div);
+            }
+        }
+
+        function mudarMes(dir) {
+            dataAtualCal.setMonth(dataAtualCal.getMonth() + dir);
+            renderizarCalendario();
+        }
+
+        // --- PONTO E HISTÓRICO ---
+        function baterPonto(tipo) {
+            const conf = confirm(`Deseja registrar ${tipo} agora?`);
+            if (!conf) return;
+
+            const agora = new Date();
+            const novoPonto = {
+                tipo,
+                data: agora.toLocaleDateString('pt-BR'),
+                hora: agora.toLocaleTimeString('pt-BR'),
+                ts: agora.getTime()
+            };
             
-            // Nomes dos dias
-            ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].forEach(d => {
-                grid.innerHTML += `<div class="dia-semana">${d}</div>`;
+            registros.push(novoPonto);
+            localStorage.setItem('borel_final_v1', JSON.stringify(registros));
+            renderizarCalendario();
+            selecionarDia(novoPonto.data);
+        }
+
+        function selecionarDia(dataId) {
+            diaSelecionadoStr = dataId;
+            document.getElementById('view-data').innerText = dataId;
+            const pontosDia = registros.filter(r => r.data === dataId).sort((a,b) => a.ts - b.ts);
+            const container = document.getElementById('lista-pontos-dia');
+            const btnDel = document.getElementById('btn-excluir-dia');
+
+            if (pontosDia.length > 0) {
+                container.innerHTML = pontosDia.map(p => `
+                    <div class="ponto-item">
+                        <span>${p.tipo}</span>
+                        <strong>${p.hora}</strong>
+                    </div>
+                `).join('');
+                btnDel.style.display = 'block';
+            } else {
+                container.innerHTML = "Sem registros para este dia.";
+                btnDel.style.display = 'none';
+            }
+        }
+
+        function excluirDiaSelecionado() {
+            if (confirm(`Excluir TODOS os pontos de ${diaSelecionadoStr}?`)) {
+                registros = registros.filter(r => r.data !== diaSelecionadoStr);
+                localStorage.setItem('borel_final_v1', JSON.stringify(registros));
+                renderizarCalendario();
+                selecionarDia(diaSelecionadoStr);
+            }
+        }
+
+        // --- CÁLCULOS TOTAIS ---
+        function calcularTudo() {
+            let totalTrabalhado = 0;
+            let totalFaltas = 0;
+            let totalExtras = 0;
+
+            // Agrupa por dia
+            const diasMap = {};
+            registros.forEach(r => {
+                if (!diasMap[r.data]) diasMap[r.data] = [];
+                diasMap[r.data].push(r);
             });
 
-            const hoje = new Date();
-            let inicioCiclo, fimCiclo;
+            // Regra: Dia 22 de um mês a 21 do outro
+            // Para simplificar no treinamento, calcularemos todos os registros salvos
+            Object.values(diasMap).forEach(pontos => {
+                pontos.sort((a, b) => a.ts - b.ts);
+                let minutosDoDia = 0;
 
-            // Lógica para definir se o ciclo começou no dia 22 do mês passado ou deste mês
-            if (hoje.getDate() >= 22) {
-                inicioCiclo = new Date(hoje.getFullYear(), hoje.getMonth(), 22);
-                fimCiclo = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 21);
-            } else {
-                inicioCiclo = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 22);
-                fimCiclo = new Date(hoje.getFullYear(), hoje.getMonth(), 21);
-            }
+                for (let i = 0; i < pontos.length; i += 2) {
+                    if (pontos[i+1]) {
+                        minutosDoDia += (pontos[i+1].ts - pontos[i].ts) / 1000 / 60;
+                    }
+                }
 
-            // Preencher espaços vazios até o primeiro dia da semana do ciclo
-            for (let i = 0; i < inicioCiclo.getDay(); i++) {
-                grid.innerHTML += `<div class="dia outro-mes"></div>`;
-            }
+                if (minutosDoDia > 360) minutosDoDia -= 70; // Almoço
 
-            // Loop entre data de início e fim
-            let dataCursor = new Date(inicioCiclo);
-            while (dataCursor <= fimCiclo) {
-                const diaNum = dataCursor.getDate();
-                const dataId = dataCursor.toLocaleDateString('pt-BR');
-                const temPonto = registros.some(r => r.data === dataId);
-                const isHoje = dataId === hoje.toLocaleDateString('pt-BR');
+                if (minutosDoDia > 0) {
+                    if (minutosDoDia < JORNADA_MINUTOS) {
+                        totalFaltas += (JORNADA_MINUTOS - minutosDoDia);
+                    } else {
+                        totalExtras += (minutosDoDia - JORNADA_MINUTOS);
+                    }
+                    totalTrabalhado += minutosDoDia;
+                }
+            });
 
-                const divDia = document.createElement('div');
-                divDia.className = `dia ${temPonto ? 'com-ponto' : ''} ${isHoje ? 'hoje' : ''}`;
-                divDia.innerText = diaNum;
-                divDia.onclick = () => verDetalhesDia(dataId);
-                
-                grid.appendChild(divDia);
-                dataCursor.setDate(dataCursor.getDate() + 1);
-            }
-        }
-
-        function baterPonto(tipo) {
-            if (confirm(`Confirmar ${tipo}?`)) {
-                const agora = new Date();
-                registros.push({
-                    tipo: tipo,
-                    hora: agora.toLocaleTimeString('pt-BR'),
-                    data: agora.toLocaleDateString('pt-BR'),
-                    timestamp: agora.getTime()
-                });
-                localStorage.setItem('borel_v3', JSON.stringify(registros));
-                gerarCalendario();
-                atualizarBeneficios();
-            }
-        }
-
-        function verDetalhesDia(dataId) {
-            document.getElementById('dia-selecionado').innerText = dataId;
-            const pontosDia = registros.filter(r => r.data === dataId);
-            const container = document.getElementById('detalhes-lista');
+            // Atualiza UI
+            document.getElementById('res-saldo').innerText = formatarMin(totalTrabalhado);
+            document.getElementById('res-faltas').innerText = formatarMin(totalFaltas);
             
-            if (pontosDia.length === 0) {
-                container.innerHTML = "Sem registros para este dia.";
-            } else {
-                container.innerHTML = pontosDia.map(p => `<div>• <b>${p.tipo}</b> às ${p.hora}</div>`).join('');
-                // Aqui você pode adicionar um campo para a Carga de Produção futuramente
-                container.innerHTML += `<br><small style="color:var(--orange)">Dica: Adicionar carga de produção para este dia?</small>`;
+            // Lógica Benefícios
+            const horasFaltosas = totalFaltas / 60;
+            document.getElementById('res-alim').innerText = horasFaltosas >= 2 ? "R$ 0,00" : "R$ 270,00";
+            document.getElementById('res-alim').parentElement.style.color = horasFaltosas >= 2 ? "var(--red)" : "white";
+
+            let valorProd = 150;
+            if (horasFaltosas >= 8) valorProd = 135; // -10%
+            if (horasFaltosas >= 90) valorProd = 0; // -100%
+            document.getElementById('res-prod').innerText = `R$ ${valorProd.toFixed(2)}`;
+
+            alert("Cálculos atualizados com base no histórico!");
+        }
+
+        function formatarMin(min) {
+            const h = Math.floor(min / 60);
+            const m = Math.round(min % 60);
+            return `${h}h ${String(m).padStart(2, '0')}m`;
+        }
+
+        function limparTudo() {
+            if (confirm("LIMPAR TUDO? Isso apaga todos os meses e anos.")) {
+                localStorage.removeItem('borel_final_v1');
+                location.reload();
             }
         }
 
-        function atualizarBeneficios() {
-            // Aqui entra a lógica de cálculo de horas que vimos antes
-            // Vou simplificar para mostrar o visual mudando
-            let faltas = 0; // Exemplo: somar logicamente
-            document.getElementById('val-faltas').innerText = "0h 0m";
-        }
-
-        gerarCalendario();
+        // Início
+        renderizarCalendario();
     </script>
 </body>
 </html>
