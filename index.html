@@ -2,62 +2,78 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>BOREL TEC - Fullstack Point</title>
+    <title>BOREL TEC - Gestão de Ponto Pro</title>
     <style>
         :root { 
             --bg: #0f172a; --card: #1e293b; --text: #f8fafc; 
             --blue: #3b82f6; --red: #ef4444; --orange: #f59e0b; --green: #10b981; 
+            --shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
         
-        /* Sticky Nav */
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+        /* Menu de Benefícios Sticky */
         .nav-beneficios { 
             position: sticky; top: 0; background: var(--card); 
-            padding: 15px; z-index: 100; border-bottom: 2px solid var(--blue);
-            display: flex; gap: 15px; overflow-x: auto;
+            padding: 15px; z-index: 100; border-bottom: 3px solid var(--blue);
+            display: flex; gap: 20px; justify-content: center; box-shadow: var(--shadow);
         }
-        .b-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; min-width: 140px; border: 1px solid rgba(255,255,255,0.1); }
-        .b-card small { font-size: 0.7rem; color: #94a3b8; display: block; }
-        .b-card strong { font-size: 1.1rem; color: var(--blue); }
+        .b-card { background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); min-width: 120px; text-align: center; }
+        .b-card small { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .b-card strong { font-size: 1.2rem; display: block; margin-top: 5px; }
 
-        .main-grid { max-width: 1100px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
 
-        /* Calendário Real */
-        .cal-box { background: var(--card); padding: 20px; border-radius: 12px; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .cal-btn { background: #334155; border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer; }
-        .grid-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .dia-nome { font-size: 0.75rem; color: var(--blue); font-weight: bold; margin-bottom: 10px; }
+        /* Calendário */
+        .box { background: var(--card); padding: 25px; border-radius: 15px; box-shadow: var(--shadow); }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .cal-btn { background: #334155; border: none; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .cal-btn:hover { background: var(--blue); }
+        
+        .grid-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .dia-nome { color: var(--blue); font-weight: bold; font-size: 0.8rem; text-align: center; }
         .dia-num { 
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.03); border-radius: 8px; cursor: pointer; font-size: 0.9rem;
-            border: 1px solid transparent; transition: 0.2s;
+            background: rgba(255,255,255,0.03); border-radius: 10px; cursor: pointer;
+            transition: 0.2s; border: 2px solid transparent;
         }
-        .dia-num:hover { background: var(--blue); }
-        .dia-num.hoje { background: var(--blue); font-weight: bold; }
-        .dia-num.tem-ponto { border-color: var(--green); color: var(--green); box-shadow: inset 0 0 5px rgba(16, 185, 129, 0.2); }
-        .dia-num.vazio { opacity: 0; cursor: default; }
+        .dia-num:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .dia-num.hoje { background: var(--blue); font-weight: bold; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .dia-num.tem-ponto { border-color: var(--green); color: var(--green); }
+        .dia-num.vazio { opacity: 0; pointer-events: none; }
 
-        /* Controles */
-        .sidebar { display: flex; flex-direction: column; gap: 20px; }
-        .widget { background: var(--card); padding: 20px; border-radius: 12px; }
-        #relogio { font-size: 3rem; font-weight: 800; color: var(--blue); text-align: center; font-variant-numeric: tabular-nums; }
+        /* Relógio e Botões */
+        #relogio { font-size: 4rem; font-weight: 800; text-align: center; color: var(--blue); margin-bottom: 20px; font-variant-numeric: tabular-nums; }
         
-        .btn-group { display: grid; gap: 10px; margin: 20px 0; }
-        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        .btn-iniciar { background: var(--blue); }
-        .btn-pausa { background: var(--orange); }
-        .btn-parar { background: var(--red); }
-        .btn-calc { background: var(--green); width: 100%; margin-top: 10px; }
-        .btn-del-dia { background: none; border: 1px solid var(--red); color: var(--red); width: 100%; margin-top: 15px; font-size: 0.8rem; }
-        
-        .historico-detalhe { border-top: 1px solid #334155; margin-top: 15px; padding-top: 15px; min-height: 100px; }
-        .ponto-item { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px; }
+        .btn-group { display: grid; gap: 15px; }
+        .btn { 
+            padding: 18px; border: none; border-radius: 12px; font-weight: bold; 
+            cursor: pointer; color: white; font-size: 1rem; text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .btn:active { transform: scale(0.95); }
 
-        .footer-actions { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
-        .btn-danger-light { background: none; border: 1px solid #334155; color: #64748b; cursor: pointer; padding: 10px; border-radius: 8px; }
+        .btn-iniciar { background: #1e293b; border: 2px solid var(--blue); color: var(--blue); }
+        .btn-pausa { background: #1e293b; border: 2px solid var(--orange); color: var(--orange); }
+        .btn-parar { background: #1e293b; border: 2px solid var(--red); color: var(--red); }
 
-        @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } }
+        /* Efeitos de Botão Ativo */
+        .btn.active-iniciar { background: var(--blue); color: white; box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        .btn.active-pausa { background: var(--orange); color: white; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+        .btn.active-parar { background: var(--red); color: white; }
+
+        .btn-calc { background: var(--green); margin-top: 20px; width: 100%; }
+
+        /* Histórico Lateral */
+        .detalhes-header { border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .ponto-linha { 
+            display: flex; justify-content: space-between; padding: 10px; 
+            background: rgba(0,0,0,0.2); margin-bottom: 8px; border-radius: 8px; font-size: 0.9rem;
+        }
+        .btn-del-dia { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
+
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -65,78 +81,81 @@
     <nav class="nav-beneficios">
         <div class="b-card"><small>Alimentação</small><strong id="res-alim">R$ 270,00</strong></div>
         <div class="b-card"><small>Produtividade</small><strong id="res-prod">R$ 150,00</strong></div>
-        <div class="b-card"><small>Saldo Horas</small><strong id="res-saldo">0h 00m</strong></div>
-        <div class="b-card"><small>Faltosas</small><strong id="res-faltas" style="color:var(--red)">0h 00m</strong></div>
+        <div class="b-card"><small>Saldo Total</small><strong id="res-saldo" style="color:var(--green)">0h 00m</strong></div>
+        <div class="b-card"><small>Faltas</small><strong id="res-faltas" style="color:var(--red)">0h 00m</strong></div>
     </nav>
 
-    <div class="main-grid">
-        <div class="cal-box">
+    <div class="container">
+        <div class="box">
             <div class="cal-header">
-                <button class="cal-btn" onclick="mudarMes(-1)">◀</button>
-                <h2 id="cal-mes-ano">Janeiro 2026</h2>
-                <button class="cal-btn" onclick="mudarMes(1)">▶</button>
+                <button class="cal-btn" onclick="mudarMes(-1)">◀ Anterior</button>
+                <h2 id="mes-ano-label">Março 2026</h2>
+                <button class="cal-btn" onclick="mudarMes(1)">Próximo ▶</button>
             </div>
-            <div class="grid-dias" id="calendar-grid"></div>
+            <div class="grid-dias" id="cal-grid"></div>
         </div>
 
         <div class="sidebar">
-            <div class="widget">
+            <div class="box">
                 <div id="relogio">00:00:00</div>
                 <div class="btn-group">
-                    <button class="btn btn-iniciar" onclick="baterPonto('INICIAR')">INICIAR TRABALHO</button>
-                    <button class="btn btn-pausa" onclick="baterPonto('SAÍDA/RETORNO')">SAÍDA / RETORNO</button>
-                    <button class="btn btn-parar" onclick="baterPonto('PARAR')">PARAR TRABALHO</button>
+                    <button id="btn-iniciar" class="btn btn-iniciar" onclick="baterPonto('INICIAR')">Iniciar Trabalho</button>
+                    <button id="btn-pausa" class="btn btn-pausa" onclick="baterPonto('SAÍDA/RETORNO')">Saída / Retorno</button>
+                    <button id="btn-parar" class="btn btn-parar" onclick="baterPonto('PARAR')">Finalizar Dia</button>
                 </div>
-                <button class="btn btn-calc" onclick="calcularTudo()">CALCULAR SALDO TOTAL</button>
+                <button class="btn btn-calc" onclick="calcularTudo(true)">Atualizar Cálculos</button>
             </div>
 
-            <div class="widget">
-                <strong>Detalhes: <span id="view-data">Selecione um dia</span></strong>
-                <div id="lista-pontos-dia" class="historico-detalhe">
-                    Nenhum dia selecionado.
+            <div class="box" style="margin-top: 20px;">
+                <div class="detalhes-header">
+                    <strong>Dia: <span id="data-view">--/--</span></strong>
+                    <button id="del-dia-btn" class="btn-del-dia" style="display:none" onclick="excluirDia()">Apagar Dia</button>
                 </div>
-                <button id="btn-excluir-dia" class="btn btn-del-dia" style="display:none;" onclick="excluirDiaSelecionado()">EXCLUIR HISTÓRICO DO DIA</button>
+                <div id="historico-dia-lista">Selecione um dia no calendário.</div>
             </div>
         </div>
     </div>
 
-    <div class="footer-actions">
-        <button class="btn-danger-light" onclick="limparTudo()">Limpar Todo o Banco de Dados</button>
-    </div>
-
     <script>
-        // Configurações
-        const JORNADA_MINUTOS = 543; // 9h 03min
-        let dataAtualCal = new Date();
-        let diaSelecionadoStr = "";
-        let registros = JSON.parse(localStorage.getItem('borel_final_v1')) || [];
+        // Dados e Configurações
+        const MINUTOS_JORNADA = 543; // 9h 03min
+        let registros = JSON.parse(localStorage.getItem('borel_v4_data')) || [];
+        let statusAtual = localStorage.getItem('borel_v4_status') || 'parado';
+        let mesVisualizacao = new Date();
+        let diaSelecionado = new Date().toLocaleDateString('pt-BR');
 
-        // Relógio com segundos
-        setInterval(() => {
+        // Inicialização
+        function init() {
+            renderizarCalendario();
+            atualizarRelogio();
+            atualizarInterfaceBotoes();
+            selecionarDia(diaSelecionado);
+            calcularTudo(false);
+            setInterval(atualizarRelogio, 1000);
+        }
+
+        function atualizarRelogio() {
             document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR');
-        }, 1000);
+        }
 
-        // --- LÓGICA DO CALENDÁRIO ---
+        // --- CALENDÁRIO ---
         function renderizarCalendario() {
-            const grid = document.getElementById('calendar-grid');
-            const titulo = document.getElementById('cal-mes-ano');
+            const grid = document.getElementById('cal-grid');
             grid.innerHTML = '';
+            
+            const nomes = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+            nomes.forEach(n => grid.innerHTML += `<div class="dia-nome">${n}</div>`);
 
-            const nomesDias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
-            nomesDias.forEach(d => grid.innerHTML += `<div class="dia-nome">${d}</div>`);
+            const ano = mesVisualizacao.getFullYear();
+            const mes = mesVisualizacao.getMonth();
+            document.getElementById('mes-ano-label').innerText = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(mesVisualizacao);
 
-            const ano = dataAtualCal.getFullYear();
-            const mes = dataAtualCal.getMonth();
-            titulo.innerText = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(dataAtualCal);
+            const primeiroDia = new Date(ano, mes, 1).getDay();
+            const ultimoDia = new Date(ano, mes + 1, 0).getDate();
 
-            const primeiroDiaMes = new Date(ano, mes, 1).getDay();
-            const ultimoDiaMes = new Date(ano, mes + 1, 0).getDate();
+            for (let i = 0; i < primeiroDia; i++) grid.innerHTML += `<div class="dia-num vazio"></div>`;
 
-            // Espaços vazios
-            for (let i = 0; i < primeiroDiaMes; i++) grid.innerHTML += `<div class="dia-num vazio"></div>`;
-
-            // Dias do mês
-            for (let i = 1; i <= ultimoDiaMes; i++) {
+            for (let i = 1; i <= ultimoDia; i++) {
                 const dataId = `${String(i).padStart(2, '0')}/${String(mes + 1).padStart(2, '0')}/${ano}`;
                 const temPonto = registros.some(r => r.data === dataId);
                 const isHoje = new Date().toLocaleDateString('pt-BR') === dataId;
@@ -149,129 +168,130 @@
             }
         }
 
-        function mudarMes(dir) {
-            dataAtualCal.setMonth(dataAtualCal.getMonth() + dir);
+        function mudarMes(direcao) {
+            mesVisualizacao.setMonth(mesVisualizacao.getMonth() + direcao);
             renderizarCalendario();
         }
 
-        // --- PONTO E HISTÓRICO ---
+        // --- LÓGICA DE PONTO ---
         function baterPonto(tipo) {
-            const conf = confirm(`Deseja registrar ${tipo} agora?`);
-            if (!conf) return;
+            if (!confirm(`Deseja confirmar registro de ${tipo}?`)) return;
 
             const agora = new Date();
-            const novoPonto = {
+            const dataStr = agora.toLocaleDateString('pt-BR');
+            
+            registros.push({
                 tipo,
-                data: agora.toLocaleDateString('pt-BR'),
+                data: dataStr,
                 hora: agora.toLocaleTimeString('pt-BR'),
                 ts: agora.getTime()
-            };
+            });
+
+            // Atualiza status para o visual dos botões
+            if (tipo === 'INICIAR') statusAtual = 'trabalhando';
+            if (tipo === 'PARAR') statusAtual = 'parado';
+            if (tipo === 'SAÍDA/RETORNO') statusAtual = (statusAtual === 'pausa' ? 'trabalhando' : 'pausa');
+
+            localStorage.setItem('borel_v4_data', JSON.stringify(registros));
+            localStorage.setItem('borel_v4_status', statusAtual);
             
-            registros.push(novoPonto);
-            localStorage.setItem('borel_final_v1', JSON.stringify(registros));
+            atualizarInterfaceBotoes();
             renderizarCalendario();
-            selecionarDia(novoPonto.data);
+            selecionarDia(dataStr);
+            calcularTudo(false);
+        }
+
+        function atualizarInterfaceBotoes() {
+            const btnIni = document.getElementById('btn-iniciar');
+            const btnPau = document.getElementById('btn-pausa');
+            const btnPar = document.getElementById('btn-parar');
+
+            // Limpa classes
+            btnIni.classList.remove('active-iniciar');
+            btnPau.classList.remove('active-pausa');
+            btnPar.classList.remove('active-parar');
+
+            if (statusAtual === 'trabalhando') btnIni.classList.add('active-iniciar');
+            if (statusAtual === 'pausa') btnPau.classList.add('active-pausa');
+            if (statusAtual === 'parado') btnPar.classList.add('active-parar');
         }
 
         function selecionarDia(dataId) {
-            diaSelecionadoStr = dataId;
-            document.getElementById('view-data').innerText = dataId;
-            const pontosDia = registros.filter(r => r.data === dataId).sort((a,b) => a.ts - b.ts);
-            const container = document.getElementById('lista-pontos-dia');
-            const btnDel = document.getElementById('btn-excluir-dia');
+            diaSelecionado = dataId;
+            document.getElementById('data-view').innerText = dataId;
+            const pontos = registros.filter(r => r.data === dataId).sort((a,b) => a.ts - b.ts);
+            const lista = document.getElementById('historico-dia-lista');
+            const btnDel = document.getElementById('del-dia-btn');
 
-            if (pontosDia.length > 0) {
-                container.innerHTML = pontosDia.map(p => `
-                    <div class="ponto-item">
+            if (pontos.length > 0) {
+                btnDel.style.display = 'block';
+                lista.innerHTML = pontos.map(p => `
+                    <div class="ponto-linha">
                         <span>${p.tipo}</span>
                         <strong>${p.hora}</strong>
                     </div>
                 `).join('');
-                btnDel.style.display = 'block';
             } else {
-                container.innerHTML = "Sem registros para este dia.";
                 btnDel.style.display = 'none';
+                lista.innerHTML = "Nenhum ponto neste dia.";
             }
         }
 
-        function excluirDiaSelecionado() {
-            if (confirm(`Excluir TODOS os pontos de ${diaSelecionadoStr}?`)) {
-                registros = registros.filter(r => r.data !== diaSelecionadoStr);
-                localStorage.setItem('borel_final_v1', JSON.stringify(registros));
+        function excluirDia() {
+            if (confirm(`Excluir pontos de ${diaSelecionado}?`)) {
+                registros = registros.filter(r => r.data !== diaSelecionado);
+                localStorage.setItem('borel_v4_data', JSON.stringify(registros));
                 renderizarCalendario();
-                selecionarDia(diaSelecionadoStr);
+                selecionarDia(diaSelecionado);
+                calcularTudo(false);
             }
         }
 
-        // --- CÁLCULOS TOTAIS ---
-        function calcularTudo() {
-            let totalTrabalhado = 0;
+        // --- CÁLCULOS ---
+        function calcularTudo(mostrarAlerta) {
+            let totalMinutos = 0;
             let totalFaltas = 0;
-            let totalExtras = 0;
 
-            // Agrupa por dia
             const diasMap = {};
             registros.forEach(r => {
                 if (!diasMap[r.data]) diasMap[r.data] = [];
                 diasMap[r.data].push(r);
             });
 
-            // Regra: Dia 22 de um mês a 21 do outro
-            // Para simplificar no treinamento, calcularemos todos os registros salvos
             Object.values(diasMap).forEach(pontos => {
                 pontos.sort((a, b) => a.ts - b.ts);
-                let minutosDoDia = 0;
-
+                let minutosDia = 0;
                 for (let i = 0; i < pontos.length; i += 2) {
                     if (pontos[i+1]) {
-                        minutosDoDia += (pontos[i+1].ts - pontos[i].ts) / 1000 / 60;
+                        minutosDia += (pontos[i+1].ts - pontos[i].ts) / 1000 / 60;
                     }
                 }
+                if (minutosDia > 360) minutosDia -= 70; // Almoço
 
-                if (minutosDoDia > 360) minutosDoDia -= 70; // Almoço
-
-                if (minutosDoDia > 0) {
-                    if (minutosDoDia < JORNADA_MINUTOS) {
-                        totalFaltas += (JORNADA_MINUTOS - minutosDoDia);
-                    } else {
-                        totalExtras += (minutosDoDia - JORNADA_MINUTOS);
-                    }
-                    totalTrabalhado += minutosDoDia;
+                if (minutosDia > 0) {
+                    totalMinutos += minutosDia;
+                    if (minutosDia < MINUTOS_JORNADA) totalFaltas += (MINUTOS_JORNADA - minutosDia);
                 }
             });
 
-            // Atualiza UI
-            document.getElementById('res-saldo').innerText = formatarMin(totalTrabalhado);
-            document.getElementById('res-faltas').innerText = formatarMin(totalFaltas);
+            // Atualiza Tela
+            document.getElementById('res-saldo').innerText = formatar(totalMinutos);
+            document.getElementById('res-faltas').innerText = formatar(totalFaltas);
             
-            // Lógica Benefícios
-            const horasFaltosas = totalFaltas / 60;
-            document.getElementById('res-alim').innerText = horasFaltosas >= 2 ? "R$ 0,00" : "R$ 270,00";
-            document.getElementById('res-alim').parentElement.style.color = horasFaltosas >= 2 ? "var(--red)" : "white";
+            const horasFaltas = totalFaltas / 60;
+            document.getElementById('res-alim').innerText = horasFaltas >= 2 ? "R$ 0,00" : "R$ 270,00";
+            document.getElementById('res-prod').innerText = `R$ ${(horasFaltas >= 8 ? 135 : 150).toFixed(2)}`;
 
-            let valorProd = 150;
-            if (horasFaltosas >= 8) valorProd = 135; // -10%
-            if (horasFaltosas >= 90) valorProd = 0; // -100%
-            document.getElementById('res-prod').innerText = `R$ ${valorProd.toFixed(2)}`;
-
-            alert("Cálculos atualizados com base no histórico!");
+            if (mostrarAlerta) alert("Dados atualizados com sucesso!");
         }
 
-        function formatarMin(min) {
+        function formatar(min) {
             const h = Math.floor(min / 60);
             const m = Math.round(min % 60);
             return `${h}h ${String(m).padStart(2, '0')}m`;
         }
 
-        function limparTudo() {
-            if (confirm("LIMPAR TUDO? Isso apaga todos os meses e anos.")) {
-                localStorage.removeItem('borel_final_v1');
-                location.reload();
-            }
-        }
-
-        // Início
-        renderizarCalendario();
+        init();
     </script>
 </body>
 </html>
