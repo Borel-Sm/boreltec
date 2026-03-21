@@ -2,64 +2,126 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Meu Ponto Digital</title>
+    <title>Sistema de Ponto - BOREL TEC</title>
     <style>
-        :root { --bg: #f0f2f5; --dark: #1e293b; --blue: #3b82f6; --red: #ef4444; --orange: #f59e0b; }
-        body { font-family: sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
+        :root { 
+            --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; 
+            --blue: #3b82f6; --red: #ef4444; --orange: #f59e0b; --green: #10b981; 
+        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); }
         
-        /* Menu Sticky */
-        .nav { position: sticky; top: 0; background: var(--dark); color: white; padding: 15px; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .cards { display: flex; gap: 10px; margin-top: 10px; }
-        .card { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; flex: 1; border: 1px solid rgba(255,255,255,0.2); }
-        
-        .container { max-width: 600px; margin: 20px auto; padding: 20px; }
-        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; margin-bottom: 20px; }
-        
-        #relogio { font-size: 3.5rem; font-weight: bold; margin: 10px 0; color: var(--dark); }
-        
-        .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        button { padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; }
-        .btn-iniciar { background: var(--blue); grid-column: span 2; }
-        .btn-parar { background: var(--red); }
-        .btn-saida { background: var(--orange); }
-        .btn-limpar { background: none; color: var(--red); border: 1px solid var(--red); width: 100%; margin-top: 20px; }
+        /* Nav Sticky com os Benefícios */
+        .nav { 
+            position: sticky; top: 0; background: var(--card-bg); 
+            padding: 15px; z-index: 100; border-bottom: 2px solid var(--blue);
+        }
+        .cards { display: flex; gap: 15px; margin-top: 10px; }
+        .card { 
+            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; 
+            flex: 1; border: 1px solid rgba(255,255,255,0.1); 
+        }
+        .card h4 { margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+        .valor-beneficio { font-size: 1.4rem; font-weight: bold; display: block; margin: 5px 0; }
+        .status-tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .ativo { background: var(--green); color: white; }
+        .cortado { background: var(--red); color: white; }
 
-        .historico { background: white; padding: 15px; border-radius: 8px; text-align: left; }
-        ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
-        li { padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .container { max-width: 700px; margin: 20px auto; padding: 0 20px; }
+        
+        /* Relógio */
+        .relogio-box { text-align: center; margin-bottom: 30px; }
+        #relogio { font-size: 4rem; font-weight: 800; color: var(--blue); letter-spacing: -2px; }
+        #data { color: #94a3b8; }
+
+        /* Controles */
+        .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        button { 
+            padding: 16px; border: none; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; color: white; transition: 0.2s; 
+        }
+        .btn-iniciar { background: var(--blue); grid-column: span 2; font-size: 1.1rem; }
+        .btn-saida { background: var(--orange); }
+        .btn-parar { background: var(--red); }
+        button:hover { opacity: 0.8; transform: scale(0.98); }
+
+        /* Painel de Horas */
+        .painel-horas { 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; 
+            margin-bottom: 25px; text-align: center;
+        }
+        .info-hora { background: var(--card-bg); padding: 15px; border-radius: 8px; }
+        .info-hora span { display: block; font-size: 0.8rem; color: #94a3b8; }
+        .info-hora strong { font-size: 1.2rem; }
+
+        /* Histórico */
+        .historico { background: var(--card-bg); padding: 20px; border-radius: 8px; }
+        ul { list-style: none; padding: 0; margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        li { 
+            padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .tipo-ponto { font-weight: bold; font-size: 0.9rem; }
+        .hora-ponto { color: #94a3b8; font-size: 0.85rem; }
+
+        .btn-delete { 
+            background: none; color: #64748b; border: 1px solid #334155; 
+            width: 100%; margin-top: 30px; font-size: 0.8rem; 
+        }
     </style>
 </head>
 <body>
 
     <nav class="nav">
-        <strong>Benefícios (Ciclo 22 a 21)</strong>
+        <strong>Status dos Benefícios</strong>
         <div class="cards">
-            <div class="card">Alimentação: <strong>R$ 270</strong></div>
-            <div class="card">Produtividade: <strong>R$ 150</strong></div>
+            <div class="card">
+                <h4>Alimentação</h4>
+                <span class="valor-beneficio" id="val-alim">R$ 270,00</span>
+                <span id="tag-alim" class="status-tag ativo">DISPONÍVEL</span>
+            </div>
+            <div class="card">
+                <h4>Produtividade</h4>
+                <span class="valor-beneficio" id="val-prod">R$ 150,00</span>
+                <span id="tag-prod" class="status-tag ativo">100% ATIVO</span>
+            </div>
         </div>
     </nav>
 
     <div class="container">
-        <div class="box">
+        <div class="relogio-box">
             <div id="relogio">00:00:00</div>
-            <div id="data">Carregando...</div>
+            <div id="data">Carregando data...</div>
         </div>
 
         <div class="btns">
-            <button class="btn-iniciar" onclick="baterPonto('INICIAR JORNADA')">INICIAR TRABALHO</button>
-            <button class="btn-saida" onclick="baterPonto('SAÍDA/RETORNO')">SAÍDA (PAUSA)</button>
-            <button class="btn-parar" onclick="baterPonto('PARAR JORNADA')">PARAR TRABALHO</button>
+            <button class="btn-iniciar" onclick="baterPonto('INICIAR')">INICIAR TRABALHO</button>
+            <button class="btn-saida" onclick="baterPonto('SAÍDA/RETORNO')">SAÍDA / RETORNO</button>
+            <button class="btn-parar" onclick="baterPonto('PARAR')">PARAR TRABALHO</button>
+        </div>
+
+        <div class="painel-horas">
+            <div class="info-hora"><span>Trabalhadas</span><strong id="total-trab">0h 0m</strong></div>
+            <div class="info-hora"><span>Faltosas</span><strong id="total-falt">0h 0m</strong></div>
+            <div class="info-hora"><span>Extras</span><strong id="total-extra">0h 0m</strong></div>
         </div>
 
         <div class="historico">
-            <strong>Histórico Recente:</strong>
+            <strong>Histórico do Ciclo</strong>
             <ul id="lista"></ul>
         </div>
 
-        <button class="btn-limpar" onclick="limparTudo()">EXCLUIR HISTÓRICO</button>
+        <button class="btn-delete" onclick="limparHistorico()">EXCLUIR HISTÓRICO TOTAL</button>
     </div>
 
     <script>
+        // Configurações de Regra de Negócio
+        const JORNADA_DIARIA_MINUTOS = 543; // 9h 03min
+        const VALOR_ALIM = 270;
+        const VALOR_PROD = 150;
+
+        // Iniciar Dados
+        let registros = JSON.parse(localStorage.getItem('borel_ponto_v2')) || [];
+
         // Relógio
         setInterval(() => {
             const agora = new Date();
@@ -67,29 +129,122 @@
             document.getElementById('data').innerText = agora.toLocaleDateString('pt-BR', {dateStyle: 'full'});
         }, 1000);
 
-        // Lógica de Dados
-        let registros = JSON.parse(localStorage.getItem('meuponto_v1')) || [];
-
         function baterPonto(tipo) {
-            if (confirm(`Deseja confirmar: ${tipo}?`)) {
+            const msg = tipo === 'INICIAR' ? 'Deseja iniciar sua jornada?' : 
+                        tipo === 'PARAR' ? 'Deseja concluir sua jornada?' : 'Registrar saída/retorno?';
+            
+            if (confirm(msg)) {
                 const agora = new Date();
-                registros.push({ tipo, hora: agora.toLocaleString('pt-BR') });
-                localStorage.setItem('meuponto_v1', JSON.stringify(registros));
+                registros.push({
+                    tipo: tipo,
+                    timestamp: agora.getTime(),
+                    dataFormatada: agora.toLocaleString('pt-BR')
+                });
+                localStorage.setItem('borel_ponto_v2', JSON.stringify(registros));
                 renderizar();
             }
         }
 
-        function limparTudo() {
-            if (confirm("Apagar todo o histórico permanentemente?")) {
-                localStorage.removeItem('meuponto_v1');
+        function limparHistorico() {
+            if (confirm("Isso apagará todos os dados do ciclo. Confirma?")) {
+                localStorage.removeItem('borel_ponto_v2');
                 registros = [];
                 renderizar();
             }
         }
 
         function renderizar() {
+            // Renderizar Lista
             const lista = document.getElementById('lista');
-            lista.innerHTML = registros.map(r => `<li><span>${r.tipo}</span> <b>${r.hora}</b></li>`).reverse().join('');
+            lista.innerHTML = registros.map(r => `
+                <li>
+                    <span class="tipo-ponto">${r.tipo}</span>
+                    <span class="hora-ponto">${r.dataFormatada}</span>
+                </li>
+            `).reverse().join('');
+
+            calcularLogica();
+        }
+
+        function calcularLogica() {
+            let totalMinutosTrabalhados = 0;
+            let faltasEmMinutos = 0;
+            let extrasEmMinutos = 0;
+            let diasTrabalhados = 0;
+            let diasComFaltaTotal = 0; // Para a regra de 10 dias
+
+            // Agrupar pontos por dia para calcular jornada diária
+            const dias = {};
+            registros.forEach(r => {
+                const data = r.dataFormatada.split(',')[0];
+                if (!dias[data]) dias[data] = [];
+                dias[data].push(r);
+            });
+
+            for (const data in dias) {
+                const pontosDoDia = dias[data].sort((a, b) => a.timestamp - b.timestamp);
+                let minutosDia = 0;
+
+                // Cálculo simples: par entrada/saída
+                for (let i = 0; i < pontosDoDia.length; i += 2) {
+                    if (pontosDoDia[i+1]) {
+                        const dif = (pontosDoDia[i+1].timestamp - pontosDoDia[i].timestamp) / 1000 / 60;
+                        minutosDia += dif;
+                    }
+                }
+
+                // Descontar almoço (70min) se trabalhou mais de 6h
+                if (minutosDia > 360) minutosDia -= 70;
+
+                totalMinutosTrabalhados += minutosDia;
+
+                // Comparar com jornada esperada
+                if (minutosDia < JORNADA_DIARIA_MINUTOS) {
+                    faltasEmMinutos += (JORNADA_DIARIA_MINUTOS - minutosDia);
+                } else {
+                    extrasEmMinutos += (minutosDia - JORNADA_DIARIA_MINUTOS);
+                }
+            }
+
+            // Exibir no Painel
+            document.getElementById('total-trab').innerText = formatarMinutos(totalMinutosTrabalhados);
+            document.getElementById('total-falt').innerText = formatarMinutos(faltasEmMinutos);
+            document.getElementById('total-extra').innerText = formatarMinutos(extrasEmMinutos);
+
+            // REGRAS DE BENEFÍCIOS
+            const horasFaltosasTotal = faltasEmMinutos / 60;
+
+            // 1. Alimentação (Corta com 2h ou mais de falta)
+            if (horasFaltosasTotal >= 2) {
+                document.getElementById('val-alim').innerText = "R$ 0,00";
+                document.getElementById('tag-alim').innerText = "CORTADO (FALTA > 2H)";
+                document.getElementById('tag-alim').className = "status-tag cortado";
+            } else {
+                document.getElementById('val-alim').innerText = "R$ 270,00";
+                document.getElementById('tag-alim').className = "status-tag ativo";
+            }
+
+            // 2. Produtividade (10% com 8h de falta)
+            let valorProdAtual = VALOR_PROD;
+            if (horasFaltosasTotal >= 8) {
+                valorProdAtual = VALOR_PROD * 0.9;
+                document.getElementById('tag-prod').innerText = "90% ATIVO (-10% MULTA)";
+                document.getElementById('tag-prod').className = "status-tag cortado";
+            }
+            
+            // Regra de 10 dias de falta (estimado por horas: 10 dias * 9h = 90h)
+            if (horasFaltosasTotal >= 90) {
+                valorProdAtual = 0;
+                document.getElementById('tag-prod').innerText = "0% (PERDA TOTAL)";
+            }
+
+            document.getElementById('val-prod').innerText = `R$ ${valorProdAtual.toFixed(2)}`;
+        }
+
+        function formatarMinutos(minutos) {
+            const h = Math.floor(minutos / 60);
+            const m = Math.floor(minutos % 60);
+            return `${h}h ${m}m`;
         }
 
         renderizar();
