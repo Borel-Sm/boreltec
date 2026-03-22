@@ -2,288 +2,418 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOREL TEC - Gestão de Ponto Profissional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BorelTec | Ponto PWA</title>
     <style>
-        :root { 
-            --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; 
-            --green: #10b981; --red: #ef4444; --orange: #f59e0b; --text: #f8fafc;
+        /* =========================================
+           Estilo Dark/Neon (Hacker Aesthetic)
+           ========================================= */
+        :root {
+            --bg-color: #050505;
+            --panel-bg: #111111;
+            --neon-blue: #00f3ff;
+            --neon-blue-dim: rgba(0, 243, 255, 0.2);
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --alert-red: #ff0055;
+            --font-family: 'Courier New', Courier, monospace;
         }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
-        
-        /* HEADER STATUS */
-        .dashboard-nav { 
-            position: sticky; top: 0; background: var(--card); padding: 15px; 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; 
-            z-index: 100; border-bottom: 3px solid var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
         }
-        .stat-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-        .stat-card small { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; display: block; }
-        .stat-card strong { font-size: 1.2rem; display: block; margin-top: 5px; }
 
-        .main-grid { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 400px; gap: 25px; }
-
-        /* CALENDÁRIO */
-        .box { background: var(--card); padding: 20px; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .cal-btn { background: #334155; border: none; color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
-        .grid-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .dia-nome { font-size: 0.75rem; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
-        .dia-num { 
-            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.03); border-radius: 8px; cursor: pointer; font-size: 0.9rem;
-            border: 1px solid transparent; transition: 0.2s;
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        .dia-num:hover { background: var(--accent); }
-        .dia-num.hoje { background: var(--accent); font-weight: bold; }
-        .dia-num.tem-ponto { border-color: var(--green); color: var(--green); }
-        .dia-num.selecionado { border-color: white; transform: scale(1.05); }
-        .dia-num.vazio { opacity: 0; pointer-events: none; }
 
-        /* PAINEL DE CONTROLE */
-        #relogio { font-size: 3.5rem; font-weight: 800; color: var(--accent); text-align: center; margin-bottom: 10px; font-variant-numeric: tabular-nums; }
-        
-        .progresso-container { background: #334155; height: 10px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        #progresso-barra { background: var(--accent); height: 100%; width: 0%; transition: 0.5s; box-shadow: 0 0 10px var(--accent); }
+        /* Tipografia e Efeitos Neon */
+        h1, h2, h3 {
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-        .previsao-box { display: flex; justify-content: space-around; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 0.85rem; }
-        .previsao-box strong { display: block; font-size: 1.1rem; color: var(--green); }
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 0 10px var(--neon-blue-dim);
+        }
 
-        .btn-group { display: grid; gap: 10px; }
-        .btn { padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; transition: 0.2s; }
-        .btn-iniciar { background: var(--accent); }
-        .btn-pausa { background: var(--orange); }
-        .btn-parar { background: var(--red); }
+        /* Controles e Inputs */
+        select, input[type="time"], button {
+            background-color: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 10px;
+            font-family: inherit;
+            font-size: 16px;
+            border-radius: 4px;
+            outline: none;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-        /* HISTÓRICO */
-        .historico-dia { border-top: 1px solid #334155; margin-top: 15px; padding-top: 15px; }
-        .ponto-item { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; }
-        .btn-excluir { background: none; border: 1px solid var(--red); color: var(--red); width: 100%; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 0.8rem; }
-        
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        select:focus, input[type="time"]:focus {
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        button {
+            background-color: var(--neon-blue-dim);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--neon-blue);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* Dashboards e Dados */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: #0a0a0a;
+            border: 1px dashed var(--text-muted);
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.2rem;
+            color: var(--neon-blue);
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        /* Barra de Progresso */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #222;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--neon-blue);
+            width: 0%;
+            box-shadow: 0 0 10px var(--neon-blue);
+            transition: width 0.5s ease;
+        }
+
+        /* Lista de Histórico */
+        .history-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .btn-delete {
+            width: auto;
+            margin: 0;
+            padding: 5px 10px;
+            border-color: var(--alert-red);
+            color: var(--alert-red);
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--alert-red);
+            color: white;
+            box-shadow: 0 0 10px var(--alert-red);
+        }
     </style>
 </head>
 <body>
 
-    <nav class="dashboard-nav">
-        <div class="stat-card"><small id="label-meta">Meta do Mês</small><strong id="res-meta-mes">0h 00m</strong></div>
-        <div class="stat-card"><small>Horas Normais</small><strong id="res-total-normal">0h 00m</strong></div>
-        <div class="stat-card"><small>Horas Extras</small><strong id="res-total-extra" style="color:var(--accent)">0h 00m</strong></div>
-        <div class="stat-card"><small>Alimentação</small><strong id="res-alim">R$ 270,00</strong></div>
-    </nav>
+<div class="app-container">
+    <h1>BorelTec.SYS</h1>
 
-    <div class="main-grid">
-        <div class="box">
-            <div class="cal-header">
-                <button class="cal-btn" onclick="mudarMes(-1)">◀</button>
-                <h2 id="cal-titulo">Mês Ano</h2>
-                <button class="cal-btn" onclick="mudarMes(1)">▶</button>
+    <div class="panel">
+        <h2>Controle Mensal</h2>
+        <input type="month" id="monthSelector" onchange="app.updateMonthlyData()">
+        
+        <div class="dashboard-grid">
+            <div class="stat-box">
+                <small>Meta do Mês (Regressiva)</small>
+                <span class="stat-value" id="monthlyGoalDisplay">00h 00m</span>
             </div>
-            <div class="grid-dias" id="grid-dias"></div>
-        </div>
-
-        <div class="sidebar">
-            <div class="box">
-                <div id="relogio">00:00:00</div>
-                <div class="progresso-container"><div id="progresso-barra"></div></div>
-
-                <div class="previsao-box">
-                    <div>Entrada Hoje <strong id="txt-entrada">--:--</strong></div>
-                    <div>Saída Prevista <strong id="txt-saida">--:--</strong></div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-iniciar" onclick="baterPonto('INICIAR')">Iniciar Trabalho</button>
-                    <button class="btn btn-pausa" onclick="baterPonto('PAUSA/RETORNO')">Intervalo / Almoço</button>
-                    <button class="btn btn-parar" onclick="baterPonto('FINALIZAR')">Finalizar Dia</button>
-                </div>
-            </div>
-
-            <div class="box" style="margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>Dia: <span id="data-view">--/--</span></strong>
-                    <button id="btn-del" class="btn-excluir" style="display:none; width: auto; margin:0" onclick="excluirDia()">Apagar</button>
-                </div>
-                <div id="lista-pontos" class="historico-dia"></div>
+            <div class="stat-box">
+                <small>Dias Úteis</small>
+                <span class="stat-value" id="workingDaysDisplay">0</span>
             </div>
         </div>
     </div>
 
-    <script>
-        const JORNADA_DIARIA = 543; // 9h 03m
-        const ALMOCO = 70;         // 1h 10m
-        const INICIO_NORMAL = "07:15";
-        const FIM_NORMAL = "17:28";
+    <div class="panel">
+        <h2>Registro Diário</h2>
+        <input type="date" id="dateSelector" onchange="app.loadDailyData()">
+        <div style="display: flex; gap: 10px;">
+            <input type="time" id="timeInput">
+            <button onclick="app.addPunch()">Registrar</button>
+        </div>
 
-        let registros = JSON.parse(localStorage.getItem('borel_v8_final')) || [];
-        let dataVisualizacao = new Date();
-        let diaSelecionadoStr = new Date().toLocaleDateString('pt-BR');
+        <ul class="history-list" id="punchList"></ul>
+    </div>
 
-        function init() {
-            renderizarCalendario();
-            setInterval(atualizarTempoReal, 1000);
-            selecionarDia(diaSelecionadoStr);
-            calcularTudo();
-        }
+    <div class="panel">
+        <h2>Status de Hoje</h2>
+        <div class="dashboard-grid">
+            <div class="stat-box">
+                <small>Saída Prevista (ETA)</small>
+                <span class="stat-value" id="etaDisplay">--:--</span>
+            </div>
+            <div class="stat-box">
+                <small>Horas Normais</small>
+                <span class="stat-value" id="normalWorkedDisplay">00h 00m</span>
+            </div>
+            <div class="stat-box">
+                <small>Horas Extras</small>
+                <span class="stat-value" id="extraWorkedDisplay">00h 00m</span>
+            </div>
+            <div class="stat-box">
+                <small>Desconto Almoço</small>
+                <span class="stat-value" id="lunchDeductionDisplay">0 min</span>
+            </div>
+        </div>
+        
+        <small style="display:block; margin-top:15px;">Progresso Diário (Meta: 9h 03m)</small>
+        <div class="progress-container">
+            <div class="progress-bar" id="dailyProgressBar"></div>
+        </div>
+    </div>
+</div>
 
-        function atualizarTempoReal() {
-            document.getElementById('relogio').innerText = new Date().toLocaleTimeString('pt-BR');
-            const hoje = new Date().toLocaleDateString('pt-BR');
-            if (diaSelecionadoStr === hoje) {
-                const pontos = registros.filter(r => r.data === hoje).sort((a,b) => a.ts - b.ts);
-                if (pontos.length > 0) {
-                    const totalNecessario = (JORNADA_DIARIA + ALMOCO) * 60000;
-                    let perc = ((new Date().getTime() - pontos[0].ts) / totalNecessario) * 100;
-                    document.getElementById('progresso-barra').style.width = Math.min(perc, 100) + "%";
-                }
-            }
-        }
+<script>
+    /**
+     * =========================================
+     * BORELTEC CORE LOGIC (As Engrenagens)
+     * =========================================
+     */
+    const app = {
+        data: JSON.parse(localStorage.getItem('boreltec_data')) || {},
+        
+        // Constantes das Regras de Negócio Estritas
+        rules: {
+            normalStart: 7 * 60 + 15,  // 07:15 em minutos (435)
+            normalEnd: 17 * 60 + 28,   // 17:28 em minutos (1048)
+            dailyGoalMins: 9 * 60 + 3, // 9h 03m (543)
+            lunchDeduction: 70,        // 70 minutos
+            etaShiftDuration: 10 * 60 + 13 // 10h 13m (Jornada + Almoço)
+        },
 
-        function mudarMes(dir) {
-            dataVisualizacao.setMonth(dataVisualizacao.getMonth() + dir);
-            renderizarCalendario();
-            calcularTudo();
-        }
-
-        function renderizarCalendario() {
-            const grid = document.getElementById('grid-dias');
-            grid.innerHTML = '';
-            ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].forEach(d => grid.innerHTML += `<div class="dia-nome">${d}</div>`);
-
-            const ano = dataVisualizacao.getFullYear();
-            const mes = dataVisualizacao.getMonth();
-            document.getElementById('cal-titulo').innerText = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(dataVisualizacao);
-
-            const primeiroDia = new Date(ano, mes, 1).getDay();
-            const ultimoDia = new Date(ano, mes + 1, 0).getDate();
-
-            for (let i = 0; i < primeiroDia; i++) grid.innerHTML += `<div class="dia-num vazio"></div>`;
-
-            for (let i = 1; i <= ultimoDia; i++) {
-                const dataId = `${String(i).padStart(2, '0')}/${String(mes + 1).padStart(2, '0')}/${ano}`;
-                const temPonto = registros.some(r => r.data === dataId);
-                const isHoje = new Date().toLocaleDateString('pt-BR') === dataId;
-                const isSel = diaSelecionadoStr === dataId;
-
-                const div = document.createElement('div');
-                div.className = `dia-num ${temPonto ? 'tem-ponto' : ''} ${isHoje ? 'hoje' : ''} ${isSel ? 'selecionado' : ''}`;
-                div.innerText = i;
-                div.onclick = () => selecionarDia(dataId);
-                grid.appendChild(div);
-            }
-        }
-
-        function baterPonto(tipo) {
-            if (!confirm(`Registrar ${tipo}?`)) return;
-            const agora = new Date();
-            const dataStr = agora.toLocaleDateString('pt-BR');
-            registros.push({ tipo, data: dataStr, hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime() });
-            localStorage.setItem('borel_v8_final', JSON.stringify(registros));
-            renderizarCalendario();
-            selecionarDia(dataStr);
-            calcularTudo();
-        }
-
-        function selecionarDia(dataId) {
-            diaSelecionadoStr = dataId;
-            document.getElementById('data-view').innerText = dataId;
-            const pontos = registros.filter(r => r.data === dataId).sort((a,b) => a.ts - b.ts);
-            const container = document.getElementById('lista-pontos');
-            const btnDel = document.getElementById('btn-del');
-
-            btnDel.style.display = pontos.length > 0 ? 'block' : 'none';
-            container.innerHTML = pontos.length > 0 ? pontos.map(p => `<div class="ponto-item"><span>${p.tipo}</span><strong>${p.hora}</strong></div>`).join('') : "Sem registros.";
-
-            if (pontos.length > 0) {
-                document.getElementById('txt-entrada').innerText = pontos[0].hora;
-                const saidaTs = new Date(pontos[0].ts + (JORNADA_DIARIA + ALMOCO) * 60000);
-                document.getElementById('txt-saida').innerText = saidaTs.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-            } else {
-                document.getElementById('txt-entrada').innerText = "--:--";
-                document.getElementById('txt-saida').innerText = "--:--";
-                document.getElementById('progresso-barra').style.width = "0%";
-            }
-            renderizarCalendario();
-        }
-
-        function excluirDia() {
-            if (confirm(`Excluir dia ${diaSelecionadoStr}?`)) {
-                registros = registros.filter(r => r.data !== diaSelecionadoStr);
-                localStorage.setItem('borel_v8_final', JSON.stringify(registros));
-                selecionarDia(diaSelecionadoStr);
-                calcularTudo();
-            }
-        }
-
-        function calcularTudo() {
-            const ano = dataVisualizacao.getFullYear();
-            const mes = dataVisualizacao.getMonth();
-            let diasUteisMês = 0;
-            for (let d = 1; d <= new Date(ano, mes + 1, 0).getDate(); d++) {
-                const ds = new Date(ano, mes, d).getDay();
-                if (ds > 0 && ds < 6) diasUteisMês++;
-            }
-            const metaMensalMinutos = diasUteisMês * JORNADA_DIARIA;
-            document.getElementById('label-meta').innerText = `Meta de ${new Intl.DateTimeFormat('pt-BR', {month:'long'}).format(dataVisualizacao)}`;
-
-            let totalNormal = 0;
-            let totalExtra = 0;
-            const diasAgrupados = {};
-
-            registros.filter(r => {
-                const [d, m, a] = r.data.split('/');
-                return parseInt(m) === mes + 1 && parseInt(a) === ano;
-            }).forEach(r => {
-                if (!diasAgrupados[r.data]) diasAgrupados[r.data] = [];
-                diasAgrupados[r.data].push(r);
-            });
-
-            Object.keys(diasAgrupados).forEach(dataStr => {
-                const pts = diasAgrupados[dataStr].sort((a,b) => a.ts - b.ts);
-                const [d, m, a] = dataStr.split('/');
-                const diaSemana = new Date(a, m-1, d).getDay();
-
-                if (diaSemana === 0 || diaSemana === 6) {
-                    for (let i = 0; i < pts.length; i += 2) if(pts[i+1]) totalExtra += (pts[i+1].ts - pts[i].ts) / 60000;
-                } else {
-                    let diaNormal = 0;
-                    for (let i = 0; i < pts.length; i += 2) {
-                        if (!pts[i+1]) continue;
-                        const ent = new Date(pts[i].ts);
-                        const sai = new Date(pts[i+1].ts);
-                        const lMin = new Date(ent); lMin.setHours(7, 15, 0);
-                        const lMax = new Date(sai); lMax.setHours(17, 28, 0);
-
-                        if (ent < lMin) totalExtra += (Math.min(sai.getTime(), lMin.getTime()) - ent.getTime()) / 60000;
-                        if (sai > lMax) totalExtra += (sai.getTime() - Math.max(ent.getTime(), lMax.getTime())) / 60000;
-
-                        const iNorm = Math.max(ent.getTime(), lMin.getTime());
-                        const fNorm = Math.min(sai.getTime(), lMax.getTime());
-                        if (fNorm > iNorm) diaNormal += (fNorm - iNorm) / 60000;
-                    }
-                    if (diaNormal > 360) diaNormal -= ALMOCO;
-                    totalNormal += Math.max(0, diaNormal);
-                }
-            });
-
-            const saldoRegressivo = metaMensalMinutos - totalNormal;
-            document.getElementById('res-meta-mes').innerText = formatar(Math.max(0, saldoRegressivo));
-            document.getElementById('res-total-normal').innerText = formatar(totalNormal);
-            document.getElementById('res-total-extra').innerText = formatar(totalExtra);
+        init() {
+            // Seta a data de hoje por padrão
+            const today = new Date();
+            const yearMonth = today.toISOString().slice(0, 7);
+            const fullDate = today.toISOString().slice(0, 10);
             
-            // Lógica Vale Alimentação baseada em faltas acumuladas (ex: se faltar > 2h no mês)
-            const horasFaltandoNoMes = (metaMensalMinutos - totalNormal) / 60;
-            // Nota: Esta regra pode variar, aqui usei a lógica de se houver saldo devedor grande
-            document.getElementById('res-alim').innerText = "R$ 270,00";
-        }
+            document.getElementById('monthSelector').value = yearMonth;
+            document.getElementById('dateSelector').value = fullDate;
+            
+            this.updateMonthlyData();
+            this.loadDailyData();
+        },
 
-        function formatar(min) {
-            const h = Math.floor(min / 60);
-            const m = Math.round(min % 60);
-            return `${h}h ${String(m).padStart(2, '0')}m`;
-        }
+        save() {
+            localStorage.setItem('boreltec_data', JSON.stringify(this.data));
+            this.updateMonthlyData();
+            this.loadDailyData();
+        },
 
-        init();
-    </script>
+        // --- ENGRENAGEM A: Calendário e Meta Dinâmica ---
+        getWorkingDaysInMonth(year, month) {
+            let daysInMonth = new Date(year, month, 0).getDate();
+            let workingDays = 0;
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                let currentDay = new Date(year, month - 1, i).getDay();
+                // 0 = Domingo, 6 = Sábado
+                if (currentDay !== 0 && currentDay !== 6) {
+                    workingDays++;
+                }
+            }
+            return workingDays;
+        },
+
+        updateMonthlyData() {
+            const monthVal = document.getElementById('monthSelector').value;
+            if(!monthVal) return;
+            
+            const [year, month] = monthVal.split('-');
+            const workingDays = this.getWorkingDaysInMonth(year, month);
+            
+            // Meta Total do Mês em minutos
+            const totalMonthlyGoalMins = workingDays * this.rules.dailyGoalMins;
+            
+            // Aqui entrará no futuro a lógica de subtrair o que já foi trabalhado
+            // Por enquanto, exibe a meta total calculada
+            
+            document.getElementById('workingDaysDisplay').innerText = workingDays;
+            document.getElementById('monthlyGoalDisplay').innerText = this.formatTime(totalMonthlyGoalMins);
+        },
+
+        // --- MANIPULAÇÃO DE DADOS DIÁRIOS ---
+        addPunch() {
+            const date = document.getElementById('dateSelector').value;
+            const time = document.getElementById('timeInput').value;
+            
+            if (!date || !time) return;
+
+            if (!this.data[date]) this.data[date] = [];
+            
+            // Evita duplicadas e ordena
+            if (!this.data[date].includes(time)) {
+                this.data[date].push(time);
+                this.data[date].sort();
+                this.save();
+            }
+            document.getElementById('timeInput').value = '';
+        },
+
+        deletePunch(time) {
+            const date = document.getElementById('dateSelector').value;
+            this.data[date] = this.data[date].filter(t => t !== time);
+            this.save();
+        },
+
+        loadDailyData() {
+            const date = document.getElementById('dateSelector').value;
+            const punches = this.data[date] || [];
+            
+            // Renderiza Lista
+            const listEl = document.getElementById('punchList');
+            listEl.innerHTML = '';
+            punches.forEach(time => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <span>&gt; ${time}</span>
+                    <button class="btn-delete" onclick="app.deletePunch('${time}')">DEL</button>
+                `;
+                listEl.appendChild(li);
+            });
+
+            this.calculateDailyEngines(date, punches);
+        },
+
+        // --- ENGRENAGENS B e C: Filtro de Qualidade e ETA ---
+        calculateDailyEngines(dateStr, punches) {
+            let normalWorked = 0;
+            let extraWorked = 0;
+            let eta = "--:--";
+            let lunchApplied = false;
+
+            // Verifica se é fim de semana
+            const dateObj = new Date(dateStr + "T00:00:00");
+            const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
+
+            // Engrenagem C: ETA (Baseado no primeiro punch)
+            if (punches.length > 0) {
+                const firstPunchMins = this.timeToMins(punches[0]);
+                eta = this.minsToTime(firstPunchMins + this.rules.etaShiftDuration);
+            }
+
+            // Engrenagem B: Cálculo de Intervalos em pares (Entrada/Saída)
+            for (let i = 0; i < punches.length; i += 2) {
+                if (punches[i+1]) {
+                    const startMins = this.timeToMins(punches[i]);
+                    const endMins = this.timeToMins(punches[i+1]);
+
+                    if (isWeekend) {
+                        // Finais de semana ignoram a meta, tudo é extra
+                        extraWorked += (endMins - startMins);
+                    } else {
+                        // Janela Normal: Intersecção com 07:15 - 17:28
+                        const overlapStart = Math.max(startMins, this.rules.normalStart);
+                        const overlapEnd = Math.min(endMins, this.rules.normalEnd);
+
+                        if (overlapStart < overlapEnd) {
+                            normalWorked += (overlapEnd - overlapStart);
+                        }
+                        
+                        // Extra é o tempo total do intervalo menos o tempo normal
+                        const totalInterval = endMins - startMins;
+                        extraWorked += totalInterval - Math.max(0, overlapEnd - overlapStart);
+                    }
+                }
+            }
+
+            // Regra do Almoço: Descontar 70min se o turno normal exceder 6h (360min)
+            if (normalWorked > 360) {
+                normalWorked -= this.rules.lunchDeduction;
+                lunchApplied = true;
+            }
+
+            // Atualiza Interface
+            document.getElementById('etaDisplay').innerText = eta;
+            document.getElementById('normalWorkedDisplay').innerText = this.formatTime(normalWorked);
+            document.getElementById('extraWorkedDisplay').innerText = this.formatTime(extraWorked);
+            document.getElementById('lunchDeductionDisplay').innerText = lunchApplied ? "-70 min" : "0 min";
+            document.getElementById('lunchDeductionDisplay').style.color = lunchApplied ? "var(--alert-red)" : "var(--text-main)";
+
+            // Atualiza Barra de Progresso
+            const progress = Math.min((normalWorked / this.rules.dailyGoalMins) * 100, 100);
+            document.getElementById('dailyProgressBar').style.width = progress + '%';
+        },
+
+        // Utilitários de Tempo
+        timeToMins(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        },
+
+        minsToTime(mins) {
+            const h = Math.floor(mins / 60) % 24; // % 24 para virar o dia se necessário
+            const m = mins % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        },
+
+        formatTime(totalMins) {
+            const h = Math.floor(totalMins / 60);
+            const m = totalMins % 60;
+            return `${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m`;
+        }
+    };
+
+    // Inicializa o sistema ao carregar a página
+    window.onload = () => app.init();
+
+</script>
 </body>
 </html>
