@@ -1043,19 +1043,9 @@ function renderChart(txs){
 }
 
 /* ═══════════════════════════════════════════════════
-   BARRAS 50/30/20 — COM REDISTRIBUIÇÃO DINÂMICA
-   ─────────────────────────────────────────────────
-   Lógica:
-   1. Calcula quanto cada grupo gastou (spent).
-   2. Calcula o excesso de cada grupo que ultrapassou
-      seu limite base (overflow).
-   3. Soma todos os excessos → totalOverflow.
-   4. Distribui esse overflow proporcionalmente entre
-      os grupos que AINDA têm espaço, reduzindo seus
-      limites disponíveis (effectiveLimit).
-   5. Grupos sem excesso exibem o effectiveLimit
-      ajustado, mostrando visualmente que sobrou menos
-      orçamento por causa dos estouros alheios.
+   BARRAS 50/30/20
+   Para cada grupo, soma os gastos das categorias
+   que pertencem àquele grupo e compara ao limite %.
 ═══════════════════════════════════════════════════ */
 function renderRuleBars(txs, income){
   const container = document.getElementById('rule-bars');
@@ -1065,102 +1055,35 @@ function renderRuleBars(txs, income){
     return;
   }
 
-  // ── PASSO 1: gasto real e limite base de cada grupo ──
-  const groups = RULE_GROUPS.map(g => ({
-    ...g,
-    baseLimit: income * g.pct,
-    spent: txs.filter(t => g.cats.includes(t.cat)).reduce((s,t) => s+t.val, 0),
-  }));
-
-  // ── PASSO 2: excesso de cada grupo ──
-  groups.forEach(g => {
-    g.overflow = Math.max(0, g.spent - g.baseLimit);
-  });
-
-  // ── PASSO 3: total de overflow que precisa ser absorvido ──
-  const totalOverflow = groups.reduce((s,g) => s + g.overflow, 0);
-
-  // ── PASSO 4: redistribui o overflow nos grupos "sobressalentes"
-  //    proporcionalmente ao peso (pct) de cada grupo não-estourado.
-  //    effectiveLimit = quanto realmente sobra para gastar no grupo,
-  //    já descontando o "rombo" causado pelos grupos que estouraram.
-  if(totalOverflow > 0){
-    // Peso total dos grupos que não estouraram (para redistribuir proporcionalmente)
-    const okWeight = groups
-      .filter(g => g.overflow === 0)
-      .reduce((s,g) => s + g.pct, 0);
-
-    groups.forEach(g => {
-      if(g.overflow > 0){
-        // Grupo que estourou: limite efetivo é o que foi gasto (já estourado)
-        g.effectiveLimit = g.baseLimit; // mantém base para referência visual
-      } else {
-        // Grupo ok: desconta sua fatia proporcional do overflow total
-        const myShare = okWeight > 0 ? (g.pct / okWeight) * totalOverflow : 0;
-        g.effectiveLimit = Math.max(0, g.baseLimit - myShare);
-      }
-    });
-  } else {
-    // Sem overflow: limite efetivo = limite base
-    groups.forEach(g => { g.effectiveLimit = g.baseLimit; });
-  }
-
-  // ── PASSO 5: renderiza ──
   let html = '';
-  groups.forEach(g => {
-    const over      = g.overflow > 0;
-    const reduced   = !over && g.effectiveLimit < g.baseLimit;
-    const reduction = g.baseLimit - g.effectiveLimit; // quanto foi cortado
+  RULE_GROUPS.forEach(g=>{
+    const limit = income * g.pct;                              // Limite em R$
+    const spent = txs                                          // Gasto no grupo
+      .filter(t=>g.cats.includes(t.cat))
+      .reduce((s,t)=>s+t.val,0);
+    const pctUsed  = Math.min((spent/limit)*100,100).toFixed(1); // % do limite usada
+    const over     = spent > limit;
+    const fillColor= over ? '#ff5f6d' : g.color;
 
-    // Barra: se estourou, mostra % do baseLimit; senão, % do effectiveLimit
-    const barPct = over
-      ? Math.min((g.spent / g.baseLimit) * 100, 100)
-      : g.effectiveLimit > 0
-        ? Math.min((g.spent / g.effectiveLimit) * 100, 100)
-        : 100;
-
-    const fillColor = over
-      ? '#ff5f6d'
-      : (g.spent / g.effectiveLimit) > 0.85
-        ? '#ffb830'   // laranja: acima de 85% do limite ajustado
-        : g.color;
-
-    // Tag de status
-    let statusTag = '';
-    if(over){
-      statusTag = `<div class="over-label">⚠ ULTRAPASSOU — +R$ ${fmt(g.overflow)} acima do base</div>`;
-    } else if(reduced){
-      statusTag = `<div style="font-family:var(--f-mono);font-size:.6rem;color:var(--amber);margin-top:4px">
-        ↓ limite reduzido em R$ ${fmt(reduction)} por causa de outros estouros
-      </div>`;
-    }
-
-    html += `
+    html+=`
       <div class="rule-item">
         <div class="rule-head">
           <div class="rule-name">
-            <div class="rule-dot" style="background:${over?'var(--coral)':reduced?'var(--amber)':g.color}"></div>
+            <div class="rule-dot" style="background:${g.color}"></div>
             <span>${g.label}</span>
             <span style="font-family:var(--f-mono);font-size:.62rem;color:var(--ghost);margin-left:4px">${(g.pct*100).toFixed(0)}%</span>
           </div>
           <div class="rule-amounts">
-            <span class="rule-spent" style="color:${over?'var(--coral)':reduced?'var(--amber)':g.color}">
-              R$ ${fmt(g.spent)}
-            </span>
-            <span class="rule-limit">
-              ${reduced
-                ? `limite <s style="opacity:.4">R$ ${fmt(g.baseLimit)}</s> R$ ${fmt(g.effectiveLimit)}`
-                : `limite R$ ${fmt(g.effectiveLimit)}`
-              }
-            </span>
+            <span class="rule-spent" style="color:${over?'var(--coral)':g.color}">R$ ${fmt(spent)}</span>
+            <span class="rule-limit">limite R$ ${fmt(limit)}</span>
           </div>
         </div>
         <div class="track">
-          <div class="fill" style="width:${barPct.toFixed(1)}%;background:${fillColor}"></div>
+          <div class="fill" style="width:${pctUsed}%;background:${fillColor}"></div>
         </div>
-        ${statusTag}
+        ${over?`<div class="over-label">⚠ ULTRAPASSOU — +R$ ${fmt(spent-limit)} acima do recomendado</div>`:''}
         <div style="font-family:var(--f-mono);font-size:.6rem;color:var(--ghost);margin-top:4px">
-          ${g.hint} · ${barPct.toFixed(1)}% utilizado
+          ${g.hint} · ${pctUsed}% utilizado
         </div>
       </div>`;
   });
