@@ -648,13 +648,13 @@ footer p{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.12em;color:v
           <select id="exp-cat">
             <option value="">Selecione…</option>
             <option value="Necessidades">🏠 Necessidades (moradia, alimentação…)</option>
-            <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
-            <option value="Transporte">🚗 Transporte</option>
+            <option value="Cartão de Crédito"> Cartão de Crédito</option>
+            <option value="Transporte"> Transporte</option>
             <option value="Saúde">🏥 Saúde / Educação</option>
-            <option value="Lazer / Esporte">🎯 Lazer / Esporte</option>
-            <option value="Outros Desejos">✨ Outros Desejos</option>
-            <option value="Investimentos">📈 Investimentos</option>
-            <option value="Reserva de Emergência">🛡️ Reserva de Emergência</option>
+            <option value="Lazer / Esporte"> Lazer / Esporte</option>
+            <option value="Outros Desejos"> Outros Desejos</option>
+            <option value="Investimentos"> Investimentos</option>
+            <option value="Reserva de Emergência"> Reserva de Emergência</option>
           </select>
         </div>
 
@@ -688,7 +688,7 @@ footer p{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.12em;color:v
         <div class="rule-title">Regra 50 · 30 · 20</div>
         <div class="rule-sub">Distribuição inteligente baseada na sua renda mensal</div>
         <div id="rule-bars">
-          <div class="empty"><div class="empty-glyph">◑</div><p>Informe sua renda para ver os limites</p></div>
+          <div class="empty"><div class="empty-glyph"></div><p>Informe sua renda para ver os limites</p></div>
         </div>
       </div>
 
@@ -772,14 +772,14 @@ const RULE_GROUPS = [
 
 /* Metadados visuais por categoria */
 const CAT_META = {
-  'Necessidades':           { emoji:'🏠', color:'#3df5c1', bg:'rgba(61,245,193,.12)' },
-  'Cartão de Crédito':      { emoji:'💳', color:'#ff7eb3', bg:'rgba(255,126,179,.12)' },
-  'Transporte':             { emoji:'🚗', color:'#ffb830', bg:'rgba(255,184,48,.12)' },
-  'Saúde':                  { emoji:'🏥', color:'#a78bfa', bg:'rgba(167,139,250,.12)' },
-  'Lazer / Esporte':        { emoji:'🎯', color:'#fbbf24', bg:'rgba(251,191,36,.12)' },
-  'Outros Desejos':         { emoji:'✨', color:'#f472b6', bg:'rgba(244,114,182,.12)' },
-  'Investimentos':          { emoji:'📈', color:'#b8ff57', bg:'rgba(184,255,87,.12)' },
-  'Reserva de Emergência':  { emoji:'🛡️', color:'#38bdf8', bg:'rgba(56,189,248,.12)' },
+  'Necessidades':           { emoji:'', color:'#3df5c1', bg:'rgba(61,245,193,.12)' },
+  'Cartão de Crédito':      { emoji:'', color:'#ff7eb3', bg:'rgba(255,126,179,.12)' },
+  'Transporte':             { emoji:'', color:'#ffb830', bg:'rgba(255,184,48,.12)' },
+  'Saúde':                  { emoji:'', color:'#a78bfa', bg:'rgba(167,139,250,.12)' },
+  'Lazer / Esporte':        { emoji:'', color:'#fbbf24', bg:'rgba(251,191,36,.12)' },
+  'Outros Desejos':         { emoji:'', color:'#f472b6', bg:'rgba(244,114,182,.12)' },
+  'Investimentos':          { emoji:'', color:'#b8ff57', bg:'rgba(184,255,87,.12)' },
+  'Reserva de Emergência':  { emoji:'', color:'#38bdf8', bg:'rgba(56,189,248,.12)' },
 };
 
 let chartInst = null;
@@ -854,7 +854,7 @@ function addExpense(){
 
     if(desejoTotal > income * desejoGroup.pct){
       alert_push('warn',
-        '🎯 Limite de Lazer/Desejos',
+        ' Limite de Lazer/Desejos',
         'Você está ultrapassando os 30% recomendados para desejos este mês. Avalie se é necessário.'
       );
     }
@@ -862,7 +862,7 @@ function addExpense(){
 
   // REGRA 2 — Investimento → parabenização
   if(cat === 'Investimentos'){
-    toast('ok','🎉 Ótimo aporte!','Investir é construir o futuro. Continue assim!');
+    toast('ok',' Ótimo aporte!','Investir é construir o futuro. Continue assim!');
   }
 
   // Persiste
@@ -910,7 +910,7 @@ function clearTransactions(){
    LIMPAR TUDO
 ═══════════════════════════════════════════════════ */
 function clearAll(){
-  if(!confirm('⚠️ ATENÇÃO\nIsto apagará TODOS os dados, incluindo a renda.\nConfirma?')) return;
+  if(!confirm(' ATENÇÃO\nIsto apagará TODOS os dados, incluindo a renda.\nConfirma?')) return;
   localStorage.removeItem(LS.income);
   localStorage.removeItem(LS.txs);
   clearAlerts();
